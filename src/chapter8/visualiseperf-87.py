@@ -1,0 +1,60 @@
+import matplotlib.pyplot as plt
+import tensorflow as tf
+from tensorflow.keras import layers, models
+from keras.applications.mobilenet_v2 import MobileNetV2
+
+# Load CIFAR-10
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
+x_train, x_test = x_train / 255.0, x_test / 255.0
+
+# Resize images to 224x224 (MobileNet input size)
+x_train_resized = tf.image.resize(x_train, (224, 224))
+x_test_resized = tf.image.resize(x_test, (224, 224))
+
+# Load MobileNetV2 base (pre-trained on ImageNet)
+base_model = MobileNetV2(weights='imagenet', include_top=False, input_shape=(224,224,3))
+
+# Freeze base model layers
+base_model.trainable = False
+
+# Add custom classification layers
+model = models.Sequential([
+    base_model,
+    layers.GlobalAveragePooling2D(),
+    layers.Dense(256, activation='relu'),
+    layers.Dropout(0.5),
+    layers.Dense(10, activation='softmax')
+])
+
+# Compile
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Train
+history = model.fit(x_train_resized, y_train, epochs=10,
+                    validation_data=(x_test_resized, y_test))
+
+
+# Unfreeze the top 30 layers of the base model
+base_model.trainable = True
+for layer in base_model.layers[:-30]:
+    layer.trainable = False
+
+# Recompile with a lower learning rate
+model.compile(optimizer=tf.keras.optimizers.Adam(1e-5),
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Fine-tune
+history_fine = model.fit(x_train_resized, y_train, epochs=5,
+                         validation_data=(x_test_resized, y_test))
+
+
+plt.plot(history.history['val_accuracy'], label='Feature Extraction')
+plt.plot(history_fine.history['val_accuracy'], label='Fine-Tuned')
+plt.xlabel('Epoch')
+plt.ylabel('Validation Accuracy')
+plt.title('Transfer Learning Performance')
+plt.legend()
+plt.show()
