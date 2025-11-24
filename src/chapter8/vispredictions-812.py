@@ -4,6 +4,7 @@ from tensorflow.keras import layers, models
 import matplotlib.pyplot as plt
 from keras.applications.vgg16 import VGG16
 
+
 # ---------------------------------------------------------------------
 # 1. Load CIFAR-10 and normalize
 # ---------------------------------------------------------------------
