@@ -1,6 +1,6 @@
 from tensorflow.keras import models, layers
 from tensorflow.keras import datasets
-
+from tensorflow import keras
 
 # Load CIFAR-10 dataset
 (x_train, y_train), (x_test, y_test) = datasets.cifar10.load_data()
@@ -37,6 +37,8 @@ model.compile(optimizer='adam',
               loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
 
-history = model.fit(x_train, y_train, epochs=20,
+history = model.fit(x_train, y_train, epochs=5,
                     batch_size=64,
                     validation_data=(x_test, y_test))
+
+model.save("image_classifier.keras")

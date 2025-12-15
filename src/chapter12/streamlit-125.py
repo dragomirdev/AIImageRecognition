@@ -2,11 +2,12 @@ import streamlit as st
 import tensorflow as tf
 from PIL import Image
 import numpy as np
+from tensorflow import keras
 
 st.title("🐾 Streamlit Image Classifier Demo")
 
 # Load your CIFAR-10 model
-model = tf.keras.models.load_model("image_classifier.h5")
+model = keras.models.load_model("image_classifier.keras")
 
 # Correct CIFAR-10 class names
 class_names = [
