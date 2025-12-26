@@ -65,3 +65,4 @@ for box, score, cls in zip(boxes, scores, classes):
 
 img.show()
 
+
