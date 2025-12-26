@@ -64,3 +64,4 @@ for box, score, cls in zip(boxes, scores, classes):
     draw.text((x1, y1), f"{labels[cls]} {score:.2f}", fill="red")
 
 img.show()
+
